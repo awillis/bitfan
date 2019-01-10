@@ -3,8 +3,8 @@ package processors
 import (
 	"testing"
 
-	"bitfan/codecs"
-	"bitfan/processors/doc"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors/doc"
 	"github.com/mitchellh/mapstructure"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
@@ -23,7 +23,7 @@ func TestBaseNew(t *testing.T) {
 
 func TestBaseMaxConcurentIsZero(t *testing.T) {
 	p := &Base{}
-	assert.Equal(t, 0, p.MaxConcurent())
+	assert.Equal(t, 0, p.MaxConcurrent())
 }
 
 func TestBaseMethods(t *testing.T) {

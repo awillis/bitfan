@@ -3,7 +3,7 @@ package sleepprocessor
 import (
 	"testing"
 
-	"bitfan/processors/doc"
+	"github.com/awillis/bitfan/processors/doc"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -16,6 +16,6 @@ func TestDoc(t *testing.T) {
 	assert.IsType(t, &doc.Processor{}, New().(*processor).Doc())
 }
 func TestMaxConcurent(t *testing.T) {
-	max := New().(*processor).MaxConcurent()
+	max := New().(*processor).MaxConcurrent()
 	assert.Equal(t, 0, max, "this processor does support concurency")
 }

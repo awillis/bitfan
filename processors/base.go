@@ -1,8 +1,8 @@
 package processors
 
 import (
-	"bitfan/codecs"
-	"bitfan/processors/doc"
+	"github.com/awillis/bitfan/codecs"
+	"github.com/awillis/bitfan/processors/doc"
 	"github.com/mitchellh/mapstructure"
 	"gopkg.in/go-playground/validator.v8"
 )
@@ -49,7 +49,7 @@ func (b *Base) Start(e IPacket) error { return nil }
 
 func (b *Base) Stop(e IPacket) error { return nil }
 
-func (b *Base) MaxConcurent() int {
+func (b *Base) MaxConcurrent() int {
 	return 0
 }
 
