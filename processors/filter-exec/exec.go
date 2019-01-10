@@ -23,7 +23,7 @@ const (
 )
 
 // no concurency ! only one worker
-func (p *processor) MaxConcurent() int { return 0 }
+func (p *processor) MaxConcurrent() int { return 0 }
 
 // drop event when field value is the same in the last event
 type processor struct {

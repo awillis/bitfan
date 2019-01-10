@@ -21,7 +21,7 @@ func TestBaseNew(t *testing.T) {
 	assert.ObjectsAreEqual(p, p.B())
 }
 
-func TestBaseMaxConcurentIsZero(t *testing.T) {
+func TestBaseMaxConcurrentIsZero(t *testing.T) {
 	p := &Base{}
 	assert.Equal(t, 0, p.MaxConcurrent())
 }

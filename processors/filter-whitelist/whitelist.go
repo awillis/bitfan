@@ -18,7 +18,7 @@ const (
 )
 
 // no concurency limit
-func (p *processor) MaxConcurent() int { return 0 }
+func (p *processor) MaxConcurrent() int { return 0 }
 
 // drop event when term is in a given list
 type processor struct {

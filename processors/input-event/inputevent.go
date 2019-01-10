@@ -35,7 +35,7 @@ type processor struct {
 	wg  sync.WaitGroup
 }
 
-func (p *processor) MaxConcurent() int { return 0 }
+func (p *processor) MaxConcurrent() int { return 0 }
 func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]interface{}) error {
 	defaults := options{
 		Count: 1,

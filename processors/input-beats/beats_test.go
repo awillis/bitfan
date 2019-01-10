@@ -15,7 +15,7 @@ func TestNew(t *testing.T) {
 func TestDoc(t *testing.T) {
 	assert.IsType(t, &doc.Processor{}, New().(*processor).Doc())
 }
-func TestMaxConcurent(t *testing.T) {
+func TestMaxConcurrent(t *testing.T) {
 	max := New().(*processor).MaxConcurrent()
 	assert.Equal(t, 0, max, "this processor does support concurency")
 }

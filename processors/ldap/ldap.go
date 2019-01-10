@@ -176,7 +176,7 @@ func (p *processor) initConn() error {
 	return nil
 }
 
-func (b *processor) MaxConcurent() int {
+func (b *processor) MaxConcurrent() int {
 	return 1
 }
 

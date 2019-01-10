@@ -10,7 +10,7 @@ type Processor interface {
 	Receive(IPacket) error
 	Stop(IPacket) error
 	Doc() *doc.Processor
-	MaxConcurent() int
+	MaxConcurrent() int
 	SetPipelineUUID(string)
 	SetProcessorIdentifiers(string, string)
 }

@@ -45,7 +45,7 @@ func (t *templateFunctions) isSet(a interface{}, key interface{}) (bool, error) 
 }
 
 func (t *templateFunctions) toMarkdown(v interface{}) (string, error) {
-	unsafe := blackfriday.MarkdownCommon([]byte(cast.ToString(v)))
+	unsafe := blackfriday.Run([]byte(cast.ToString(v)))
 	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
 	return string(html), nil
 }

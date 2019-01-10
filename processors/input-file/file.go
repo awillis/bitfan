@@ -123,7 +123,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 
 }
 
-func (p *processor) MaxConcurent() int { return 1 }
+func (p *processor) MaxConcurrent() int { return 1 }
 
 func (p *processor) Start(e processors.IPacket) error {
 	p.sinceDB = processors.NewSinceDB(&processors.SinceDBOptions{

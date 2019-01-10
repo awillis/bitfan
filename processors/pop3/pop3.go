@@ -168,7 +168,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	return err
 }
 
-func (p *processor) MaxConcurent() int {
+func (p *processor) MaxConcurrent() int {
 	return 1
 }
 

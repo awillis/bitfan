@@ -190,20 +190,20 @@ func (a *Agent) start() error {
 	}
 
 	// Maximum number of concurent packet consumption ?
-	var maxConcurentPackets = a.PoolSize
+	var maxConcurrentPackets = a.PoolSize
 
-	if a.processor.MaxConcurent() > 0 && maxConcurentPackets > a.processor.MaxConcurent() {
-		maxConcurentPackets = a.processor.MaxConcurent()
-		Log().Infof("agent %s : starting only %d worker(s) (processor's limit)", a.Label, a.processor.MaxConcurent())
+	if a.processor.MaxConcurrent() > 0 && maxConcurrentPackets > a.processor.MaxConcurrent() {
+		maxConcurrentPackets = a.processor.MaxConcurrent()
+		Log().Infof("agent %s : starting only %d worker(s) (processor's limit)", a.Label, a.processor.MaxConcurrent())
 	}
 
 	// Start in chan loop and a.processor.Receive(e) !
-	Log().Debugf("agent %s : %d workers", a.Label, maxConcurentPackets)
-	go func(maxConcurentPackets int) {
+	Log().Debugf("agent %s : %d workers", a.Label, maxConcurrentPackets)
+	go func(maxConcurrentPackets int) {
 		var wg = &sync.WaitGroup{}
 
-		wg.Add(maxConcurentPackets)
-		for i := 1; i <= maxConcurentPackets; i++ {
+		wg.Add(maxConcurrentPackets)
+		for i := 1; i <= maxConcurrentPackets; i++ {
 			go a.listen(wg)
 		}
 		wg.Wait()
@@ -214,7 +214,7 @@ func (a *Agent) start() error {
 		}
 		close(a.Done)
 		Log().Debugf("processor (%d) - stopped", a.ID)
-	}(maxConcurentPackets)
+	}(maxConcurrentPackets)
 
 	// Register scheduler if needed
 	if a.Schedule != "" {

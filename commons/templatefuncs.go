@@ -72,7 +72,7 @@ func (t *templateFunctions) toString(v interface{}) (string, error) {
 	return cast.ToStringE(v)
 }
 func (t *templateFunctions) toMarkdown(v interface{}) (string, error) {
-	unsafe := blackfriday.MarkdownCommon([]byte(cast.ToString(v)))
+	unsafe := blackfriday.Run([]byte(cast.ToString(v)))
 	html := bluemonday.UGCPolicy().SanitizeBytes(unsafe)
 	return string(html), nil
 }

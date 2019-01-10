@@ -46,7 +46,7 @@ const (
 	PORT_SUCCESS = 0
 )
 
-func (p *processor) MaxConcurent() int { return 0 }
+func (p *processor) MaxConcurrent() int { return 0 }
 
 // Evaluate expression
 type processor struct {

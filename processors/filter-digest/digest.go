@@ -16,7 +16,7 @@ const (
 	PORT_SUCCESS = 0
 )
 
-func (p *processor) MaxConcurent() int { return 1 }
+func (p *processor) MaxConcurrent() int { return 1 }
 
 // Digest events every x
 type processor struct {

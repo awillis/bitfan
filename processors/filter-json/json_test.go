@@ -17,7 +17,7 @@ func TestCommonProcessorDetails(t *testing.T) {
 		})
 
 		Convey("does not have limit on concurent event processing", func() {
-			So(p.MaxConcurent(), ShouldEqual, 0)
+			So(p.MaxConcurrent(), ShouldEqual, 0)
 		})
 
 		Convey("is self documented", func() {
