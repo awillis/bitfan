@@ -4,6 +4,7 @@ package kafkaoutput
 import (
 	"context"
 	"net"
+	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -44,6 +45,8 @@ type options struct {
 	ClientID string `mapstructure:"client_id"`
 	// Balancer ( roundrobin, hash or leastbytes )
 	Balancer string `mapstructure:"balancer"`
+	// Async ( send messages without waiting for potential errors )
+	Async bool `mapstructure:"async"`
 	// Compression algorithm ( 'gzip', 'snappy', or 'lz4' )
 	Compression string `mapstructure:"compression"`
 	// Max Attempts
@@ -67,6 +70,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 	defaults := options{
 		Brokers:       []string{"localhost:9092"},
 		ClientID:      "bitfan",
+		Async:         false,
 		MaxAttempts:   10,
 		QueueSize:     1024,
 		BatchSize:     256,
@@ -135,52 +139,51 @@ func (p *processor) Start(e processors.IPacket) error {
 		ReadTimeout:      time.Second * time.Duration(p.opt.IOTimeout),
 		WriteTimeout:     time.Second * time.Duration(p.opt.IOTimeout),
 		RequiredAcks:     p.opt.RequiredAcks,
-		Async:            false,
+		Async:            p.opt.Async,
 	})
 
-	go func(p *processor) {
+	for i := 0; i < runtime.NumCPU(); i++ {
+		go func(p *processor) {
 
-		batch := make([]kafka.Message, 0, p.opt.BatchSize)
-		var shutdown = false
-		var pflush = false
-		var pftimer = time.NewTimer(time.Second * time.Duration(p.opt.PeriodicFlush))
-		p.wg.Add(1)
+			batch := make([]kafka.Message, 0, p.opt.BatchSize)
+			var shutdown = false
+			var pflush = false
+			var pftimer = time.NewTimer(time.Second * time.Duration(p.opt.PeriodicFlush))
+			p.wg.Add(1)
 
-		for {
-			select {
-			case message, ok := <-p.msgs:
-				if ok {
-					batch = append(batch, kafka.Message{Value: message})
-				} else {
-					shutdown = true
+			for {
+				select {
+				case message, ok := <-p.msgs:
+					if ok {
+						batch = append(batch, kafka.Message{Value: message})
+					} else {
+						shutdown = true
+					}
+				case <-pftimer.C:
+					pflush = true
 				}
-			case <-pftimer.C:
-				pflush = true
+
+				if len(batch) == p.opt.BatchSize || shutdown == true || pflush == true {
+
+					if !pftimer.Stop() {
+						pflush = false
+					}
+
+					if err = p.writer.WriteMessages(context.Background(), batch...); err != nil {
+						p.Logger.Errorf("error writing to kafka: %v", err)
+					}
+
+					if shutdown {
+						p.Logger.Infof("shutting down kafka writer, flushed %d records", len(batch))
+						p.wg.Done()
+						break
+					}
+					batch = batch[:0]
+					pftimer.Reset(time.Second * time.Duration(p.opt.PeriodicFlush))
+				}
 			}
-
-			if len(batch) == p.opt.BatchSize || shutdown == true || pflush == true {
-
-				if !pftimer.Stop() {
-					pflush = false
-				}
-
-				err = p.writer.WriteMessages(context.Background(), batch...)
-
-				if err != nil {
-					p.Logger.Errorf("error writing to kafka: %v", err)
-				}
-
-				if shutdown {
-					p.Logger.Infof("shutting down kafka writer, flushed %d records", len(batch))
-					p.wg.Done()
-					break
-				}
-
-				pftimer.Reset(time.Second * time.Duration(p.opt.PeriodicFlush))
-				batch = nil
-			}
-		}
-	}(p)
+		}(p)
+	}
 
 	return err
 }
