@@ -31,6 +31,8 @@ type options struct {
 	SockBufferSize int `mapstructure:"sock_buffer_size"`
 	// application buffer size, used to read from OS
 	ReadBufferSize int `mapstructure:"read_buffer_size"`
+	// read deadline for socket in seconds
+	ReadTimeout int64 `mapstructure:"read_deadline"`
 }
 
 type processor struct {
@@ -49,6 +51,7 @@ func (p *processor) Configure(ctx processors.ProcessorContext, conf map[string]i
 		Port:           5151,
 		SockBufferSize: 65536,
 		ReadBufferSize: 131072,
+		ReadTimeout:    30,
 	}
 	p.opt = &defaults
 
@@ -137,9 +140,16 @@ func (p *processor) Start(e processors.IPacket) error {
 								})
 								p.opt.ProcessCommonOptions(ne.Fields())
 								p.Send(ne)
+
+								if err := conn.SetReadDeadline(time.Now().Add(time.Duration(p.opt.ReadTimeout) * time.Second)); err != nil {
+									p.Logger.Errorf("error setting connection read timeout: %v", err)
+								}
+
 							} else {
 								if err := scanner.Err(); err != nil {
-									p.Logger.Errorf("error while reading from client: %v", err)
+									if ! strings.Contains(err.Error(), "i/o timeout") {
+										p.Logger.Errorf("error while reading from client: %v", err)
+									}
 								}
 								break
 							}
